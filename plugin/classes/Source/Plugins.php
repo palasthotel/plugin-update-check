@@ -26,9 +26,14 @@ class Plugins {
 			$pluginVersion->currentVersion = $plugin['Version'];
 
 			$call_result = plugins_api('plugin_information',['slug'=>$real_slug,'fields'=>['version'=>true]]);
-			if($call_result instanceof WP_Error || $call_result === null ) {
+			if($call_result instanceof WP_Error || $call_result === null) {
 				error_log("Cannot find any plugin information for $slug");
-			} else {
+			}
+            elseif (!property_exists($call_result, 'version' )) {
+                error_log("No version info exists for $slug");
+            }
+            else
+             {
 				$pluginVersion->latestVersion = $call_result->version;
 			}
 			$list[] = $pluginVersion;
