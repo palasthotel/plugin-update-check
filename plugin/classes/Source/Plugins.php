@@ -18,8 +18,9 @@ class Plugins {
 		$list = [];
 		foreach($plugins as $slug=>$plugin) {
 			$real_slug=explode('/',$slug);
-			$real_slug=$real_slug[count($real_slug)-2];
-
+			if ( count($real_slug)>1 ) {
+                		$real_slug=$real_slug[count($real_slug)-2];
+            		}
 			$pluginVersion = new PluginVersion();
 			$pluginVersion->slug = $real_slug;
 			$pluginVersion->name = $plugin['Name'];
