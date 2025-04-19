@@ -55,4 +55,24 @@ class Plugins {
 			return $plugin->needsUpdate();
 		}));
 	}
+
+    public function getCoreUpdate(){
+        $update_core = get_core_updates();
+        $info = [];
+        foreach($update_core as $update){
+            if ( $update->response === 'latest' )
+                continue;
+            if ( $update->locale !== get_locale() )
+                continue;
+            $info[] = [ "version" => $update->version, 'locale' => $update->locale ];
+        }
+        return $info;
+    }
+
+    public function getThemeUpdates(){
+        $list = get_theme_updates();
+        if ( empty($list) )
+            return 0;
+        return array_keys($list);
+    }
 }
