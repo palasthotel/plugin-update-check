@@ -72,7 +72,7 @@ class Plugins {
     public function getThemeUpdates(){
         $list = get_theme_updates();
         if ( empty($list) )
-            return 0;
+            return $list;
         return array_keys($list);
     }
 }
