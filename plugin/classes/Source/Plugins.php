@@ -61,9 +61,9 @@ class Plugins {
         $info = [];
         foreach($update_core as $update){
             if ( $update->response === 'latest' )
-                continue;
+                break;
             if ( $update->locale !== get_locale() )
-                continue;
+                break;
             $info[] = [ "version" => $update->version, 'locale' => $update->locale ];
         }
         return $info;
