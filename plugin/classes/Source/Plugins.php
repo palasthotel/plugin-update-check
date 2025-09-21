@@ -19,18 +19,25 @@ class Plugins {
 		foreach($plugins as $slug=>$plugin) {
 			$real_slug=explode('/',$slug);
 			if ( count($real_slug)>1 ) {
-                		$real_slug=$real_slug[count($real_slug)-2];
-            		}
-
+                $real_slug=$real_slug[count($real_slug)-2];
+            }
+            else {
+                $real_slug=$slug[0];
+            }
 			$pluginVersion = new PluginVersion();
 			$pluginVersion->slug = $real_slug;
 			$pluginVersion->name = $plugin['Name'];
 			$pluginVersion->currentVersion = $plugin['Version'];
 
 			$call_result = plugins_api('plugin_information',['slug'=>$real_slug,'fields'=>['version'=>true]]);
-			if($call_result instanceof WP_Error) {
-				error_log("Cannot find any plugin information for $slug");
-			} else {
+			if($call_result instanceof WP_Error || $call_result === null) {
+				// error_log("Cannot find any plugin information for $slug");
+			}
+            elseif (!property_exists($call_result, 'version' )) {
+                // error_log("No version info exists for $slug");
+            }
+            else
+             {
 				$pluginVersion->latestVersion = $call_result->version;
 			}
 			$list[] = $pluginVersion;
@@ -48,4 +55,24 @@ class Plugins {
 			return $plugin->needsUpdate();
 		}));
 	}
+
+    public function getCoreUpdate(){
+        $update_core = get_core_updates();
+        $info = [];
+        foreach($update_core as $update){
+            if ( $update->response === 'latest' )
+                break;
+            if ( $update->locale !== get_locale() )
+                break;
+            $info[] = [ "version" => $update->version, 'locale' => $update->locale ];
+        }
+        return $info;
+    }
+
+    public function getThemeUpdates(){
+        $list = get_theme_updates();
+        if ( empty($list) )
+            return $list;
+        return array_keys($list);
+    }
 }

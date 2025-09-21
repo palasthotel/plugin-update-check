@@ -41,6 +41,22 @@ if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME')) {
 if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_LABELS')) {
 	define('PLUGIN_UPDATE_CHECK_GITLAB_LABELS', '');
 }
+if(!defined('PLUGIN_UPDATE_CHECK_TICKET_DESCRIPTION_SUFFIX')) {
+	define('PLUGIN_UPDATE_CHECK_TICKET_DESCRIPTION_SUFFIX',"
+
+---
+
+- [ ] Merge Request für Ticket erstellen
+- [ ] Updates lokal einspielen
+- [ ] Updates lokal testen
+- [ ] Ggf. Übersetzungen aktualisieren & committen
+- [ ] Updates committen & branch in `stage` mergen
+- [ ] Updates auf die Stage ausrollen
+- [ ] Updates auf Stage testen
+- [ ] Merge Request in `main` mergen
+- [ ] Updates auf Production ausrollen
+- [ ] Updates auf Production testen");
+}
 
 class Plugin extends Components\Plugin {
 

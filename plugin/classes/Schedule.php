@@ -57,32 +57,49 @@ class Schedule extends Component {
 		$list         = $this->plugin->plugins->getUpdates();
 		$updatesCount = count( $list );
 
-		if ( $updatesCount <= 0 ) {
+        $core = $this->plugin->plugins->getCoreUpdate();
+        $coreCount = count( $core );
+
+        $themeUpdates = $this->plugin->plugins->getThemeUpdates();
+        $themeCount = count( $themeUpdates );
+
+
+
+		if ( $updatesCount <= 0 && $coreCount <= 0 && $themeCount <= 0 ) {
 			return;
 		}
 
 		$year = $dueDate->format( "y" );
 		$week = $dueDate->format( "W" );
 
-		$title = "Plugin updates KW$week/$year";
+		$title = "Updates KW$week/$year";
 
 		$description = "";
-		foreach ( $list as $plugin ) {
-			$description .= "- [ ] **$plugin->name** $plugin->currentVersion -> $plugin->latestVersion \n";
-		}
+        if ( $coreCount > 0 ) {
+            $current_version = wp_get_wp_version();
+            $description .= "### Wordpress Core  \n";
 
-		$description .= "\n\n---\n\n";
-		$description .= "- [ ] Merge Request für Ticket erstellen
-- [ ] Updates lokal einspielen
-- [ ] Updates lokal testen
-- [ ] Ggf. Übersetzungen aktualisieren & committen
-- [ ] Updates committen & branch in `stage` mergen
-- [ ] Updates auf die Stage ausrollen
-- [ ] Updates auf Stage testen
-- [ ] Merge Request in `main` mergen
-- [ ] Updates auf Production ausrollen
-- [ ] Updates auf Production testen";
+            foreach ( $core as $update ) {
+                $description .= "- [ ] " . $current_version . " (" . get_locale() . ") -> **" . $update['version'] . "** (" . $update['locale'] . ")\n";
+            }
+        }
 
+        if ( $updatesCount > 0 ){
+            $description .= "### Plugins  \n";
+            foreach ($list as $plugin) {
+                $description .= "- [ ] **$plugin->name** $plugin->currentVersion -> $plugin->latestVersion \n";
+            }
+        }
+
+        if ( $themeCount > 0 ) {
+            $description .= "### Themes \n";
+            foreach ( $themeUpdates as $update ) {
+                $description .= "- [ ] **$update** \n";
+            }
+
+        }
+		$description .= PLUGIN_UPDATE_CHECK_TICKET_DESCRIPTION_SUFFIX;
+  
 		$userId = 0;
 		if(!empty(PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME)){
 			$userId = $this->plugin->gitlab->getUserId(
@@ -90,6 +107,7 @@ class Schedule extends Component {
 				PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME
 			);
 		}
+
 
 		$success = $this->plugin->gitlab->createIssue(
 			$this->plugin->gitlabProject,

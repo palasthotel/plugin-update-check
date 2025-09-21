@@ -32,11 +32,11 @@ class InternalStore {
 	}
 
 	public static function setReportedUpdatesId(UpdatesId $id){
-		update_option(Plugin::OPTION_REPORTED_UPDATES_ID, $id->asString());
+        update_site_option(Plugin::OPTION_REPORTED_UPDATES_ID, $id->asString());
 	}
 
 	public static function getReportedUpdatesId(): string {
-		return	get_option(Plugin::OPTION_REPORTED_UPDATES_ID, "");
+		return	get_site_option(Plugin::OPTION_REPORTED_UPDATES_ID, "");
 	}
 
 
