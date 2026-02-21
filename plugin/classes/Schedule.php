@@ -21,7 +21,7 @@ class Schedule extends Component {
 			wp_schedule_event( time(), 'hourly', Plugin::SCHEDULE_CHECK_CONNECTION );
 		}
 		if ( ! wp_next_scheduled( Plugin::SCHEDULE_CHECK_UPDATES ) ) {
-			wp_schedule_event( time(), 'twicedaily', Plugin::SCHEDULE_CHECK_UPDATES );
+			wp_schedule_event( time(), 'hourly', Plugin::SCHEDULE_CHECK_UPDATES );
 		}
 	}
 
@@ -33,10 +33,14 @@ class Schedule extends Component {
 	}
 
 	public function check_updates() {
+        $settings = $this->plugin->settings;
 
+        
 		if ( ! InternalStore::isGitlabConnectionOk() ) {
 			return;
 		}
+
+
 
 		$now  = new \DateTime();
 		$dueDate = $now->modify( 'Friday this week' );
@@ -98,13 +102,13 @@ class Schedule extends Component {
             }
 
         }
-		$description .= PLUGIN_UPDATE_CHECK_TICKET_DESCRIPTION_SUFFIX;
+		$description .= $settings->GitlabConfig->TicketDescriptionSuffix;
   
 		$userId = 0;
-		if(!empty(PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME)){
+		if(!empty($settings->GitlabConfig->Assignee)) {
 			$userId = $this->plugin->gitlab->getUserId(
 				$this->plugin->gitlabProject,
-				PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME
+                $settings->GitlabConfig->Assignee
 			);
 		}
 
@@ -115,7 +119,7 @@ class Schedule extends Component {
 			$description,
 			$dueDate->format( "Y-m-d" ),
 			$userId,
-			PLUGIN_UPDATE_CHECK_GITLAB_LABELS
+			$settings->GitlabConfig->Labels,
 		);
 
 		if($success) {

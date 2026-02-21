@@ -23,41 +23,6 @@ use Palasthotel\WordPress\PluginUpdateCheck\Source\Plugins;
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-if (!defined('PLUGIN_UPDATE_CHECK_GITLAB')) {
-	define('PLUGIN_UPDATE_CHECK_GITLAB', 'https://gitlab.com');
-}
-if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAMESPACE')) {
-	define('PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAMESPACE', '');
-}
-if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAME')) {
-	define('PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAME', '');
-}
-if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_PRIVATE_TOKEN')) {
-	define('PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_PRIVATE_TOKEN', '');
-}
-if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME')) {
-	define('PLUGIN_UPDATE_CHECK_GITLAB_ASSIGNEE_USERNAME', '');
-}
-if (!defined('PLUGIN_UPDATE_CHECK_GITLAB_LABELS')) {
-	define('PLUGIN_UPDATE_CHECK_GITLAB_LABELS', '');
-}
-if(!defined('PLUGIN_UPDATE_CHECK_TICKET_DESCRIPTION_SUFFIX')) {
-	define('PLUGIN_UPDATE_CHECK_TICKET_DESCRIPTION_SUFFIX',"
-
----
-
-- [ ] Merge Request für Ticket erstellen
-- [ ] Updates lokal einspielen
-- [ ] Updates lokal testen
-- [ ] Ggf. Übersetzungen aktualisieren & committen
-- [ ] Updates committen & branch in `stage` mergen
-- [ ] Updates auf die Stage ausrollen
-- [ ] Updates auf Stage testen
-- [ ] Merge Request in `main` mergen
-- [ ] Updates auf Production ausrollen
-- [ ] Updates auf Production testen");
-}
-
 class Plugin extends Components\Plugin {
 
 	const TRANSIENT_IS_REPORTING = "plugin_update_check_is_reporting";
@@ -69,28 +34,39 @@ class Plugin extends Components\Plugin {
 	const SCHEDULE_CHECK_UPDATES = "plugin_update_check_updates";
 	public Gitlab $gitlab;
 	public Plugins $plugins;
+    public $settings;
 	public GitlabProjectConfiguration $gitlabProject;
 
 
 	public function onCreate() {
 
 		$this->plugins = new Plugins();
+        $this->settings = null;
+        if ( file_exists(dirname(ABSPATH) . '/Butlerfile') )
+            $this->settings = json_decode(file_get_contents(dirname(ABSPATH) . '/Butlerfile'))->update_check;
 
-		if (
-			empty(PLUGIN_UPDATE_CHECK_GITLAB) ||
-			empty(PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAMESPACE) ||
-			empty(PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAME) ||
-			empty(PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_PRIVATE_TOKEN)
-		) {
-			// no config found so don't even try it
-			return;
-		}
+        if ( $this->settings === null ) {
+            return;
+        }
+
+
+        $GitlabConfig = $this->settings->GitlabConfig;
+        if (
+            empty($GitlabConfig->url) ||
+            empty($GitlabConfig->ProjectNamespace) ||
+            empty($GitlabConfig->ProjectName) ||
+            empty($GitlabConfig->PrivateToken)
+        ){
+
+            return;
+        }
+
 
 		$this->gitlabProject = new GitlabProjectConfiguration(
-			PLUGIN_UPDATE_CHECK_GITLAB,
-			PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAMESPACE,
-			PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_NAME,
-			PLUGIN_UPDATE_CHECK_GITLAB_PROJECT_PRIVATE_TOKEN
+			$GitlabConfig->url,
+			$GitlabConfig->ProjectNamespace,
+			$GitlabConfig->ProjectName,
+			$GitlabConfig->PrivateToken
 		);
 
 		$this->gitlab = new Gitlab();
