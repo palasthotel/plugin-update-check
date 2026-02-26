@@ -34,6 +34,7 @@ class Plugin extends Components\Plugin {
 	const SCHEDULE_CHECK_UPDATES = "plugin_update_check_updates";
 	public Gitlab $gitlab;
 	public Plugins $plugins;
+    public $environment;
     public $settings;
 	public GitlabProjectConfiguration $gitlabProject;
 
@@ -41,10 +42,12 @@ class Plugin extends Components\Plugin {
 	public function onCreate() {
 
 		$this->plugins = new Plugins();
+        $this->environment = $this->getEnvironment();
         $this->settings = null;
         if ( file_exists(dirname(ABSPATH) . '/Butlerfile') )
             $this->settings = json_decode(file_get_contents(dirname(ABSPATH) . '/Butlerfile'))->update_check;
 
+        // no settings, no work. I quit
         if ( $this->settings === null ) {
             return;
         }
@@ -57,7 +60,6 @@ class Plugin extends Components\Plugin {
             empty($GitlabConfig->ProjectName) ||
             empty($GitlabConfig->PrivateToken)
         ){
-
             return;
         }
 
@@ -76,6 +78,15 @@ class Plugin extends Components\Plugin {
 		new Schedule($this);
 
 	}
+    public function getEnvironment() {
+        if (stristr(dirname(ABSPATH), '/Users/')) {
+            return 'butler';
+        }
+        if ( file_exists(dirname(ABSPATH) . '/config/site-config.json') ){
+            $config = json_decode(file_get_contents(dirname(ABSPATH) . '/config/site-config.json'));
+            return $config->environment ?? false;
+        }
+    }
 }
 
 Plugin::instance();
