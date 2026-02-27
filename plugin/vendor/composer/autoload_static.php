@@ -6,22 +6,69 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit6309b20e4c56903c0482f470a5dc69ce
 {
+    public static $files = array (
+        '3937806105cc8e221b8fa8db5b70d2f2' => __DIR__ . '/..' . '/wp-cli/mustangostang-spyc/includes/functions.php',
+        'be01b9b16925dcb22165c40b46681ac6' => __DIR__ . '/..' . '/wp-cli/php-cli-tools/lib/cli/cli.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Symfony\\Component\\Finder\\' => 25,
+        ),
         'P' => 
         array (
             'Palasthotel\\WordPress\\PluginUpdateCheck\\' => 40,
         ),
+        'M' => 
+        array (
+            'Mustangostang\\' => 14,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Symfony\\Component\\Finder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/finder',
+        ),
         'Palasthotel\\WordPress\\PluginUpdateCheck\\' => 
         array (
             0 => __DIR__ . '/../..' . '/classes',
+        ),
+        'Mustangostang\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/wp-cli/mustangostang-spyc/src',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'c' => 
+        array (
+            'cli' => 
+            array (
+                0 => __DIR__ . '/..' . '/wp-cli/php-cli-tools/lib',
+            ),
+        ),
+        'W' => 
+        array (
+            'WP_CLI\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/wp-cli/wp-cli/php',
+            ),
+        ),
+        'M' => 
+        array (
+            'Mustache' => 
+            array (
+                0 => __DIR__ . '/..' . '/wp-cli/mustache/src',
+            ),
         ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'WP_CLI' => __DIR__ . '/..' . '/wp-cli/wp-cli/php/class-wp-cli.php',
+        'WP_CLI_Command' => __DIR__ . '/..' . '/wp-cli/wp-cli/php/class-wp-cli-command.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -29,6 +76,7 @@ class ComposerStaticInit6309b20e4c56903c0482f470a5dc69ce
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit6309b20e4c56903c0482f470a5dc69ce::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit6309b20e4c56903c0482f470a5dc69ce::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit6309b20e4c56903c0482f470a5dc69ce::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit6309b20e4c56903c0482f470a5dc69ce::$classMap;
 
         }, null, ClassLoader::class);

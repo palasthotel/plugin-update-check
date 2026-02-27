@@ -39,5 +39,9 @@ class InternalStore {
 		return	get_site_option(Plugin::OPTION_REPORTED_UPDATES_ID, "");
 	}
 
+    public static function removeReportedUpdatesId(): void {
+        delete_site_option(Plugin::OPTION_REPORTED_UPDATES_ID);
+    }
+
 
 }

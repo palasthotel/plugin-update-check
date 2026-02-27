@@ -2,6 +2,7 @@
 
 namespace Palasthotel\WordPress\PluginUpdateCheck;
 
+use Palasthotel\WordPress\PluginUpdateCheck\Commands;
 use Palasthotel\WordPress\PluginUpdateCheck\Model\GitlabProjectConfiguration;
 use Palasthotel\WordPress\PluginUpdateCheck\Source\Gitlab;
 use Palasthotel\WordPress\PluginUpdateCheck\Source\Plugins;
@@ -76,6 +77,7 @@ class Plugin extends Components\Plugin {
 		new AdminNotice($this);
 		new PublicApi($this);
 		new Schedule($this);
+        new Commands($this)->onCreate();
 
 	}
     public function getEnvironment() {
